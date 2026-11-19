@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tcloud Chef - Hands-Free AI Culinary Assistant</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #ff6b6b;
+            --accent-hover: #ff5252;
+            --border: #333333;
+            --card-bg: #1e1e1e;
+            --highlight: #3b2d18;
+            --highlight-border: #ffaa00;
+            --badge-bg: #2b3a4a;
+            --badge-text: #64dfdf;
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #f4f7f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #e63946;
+            --accent-hover: #d62828;
+            --border: #dee2e6;
+            --card-bg: #ffffff;
+            --highlight: #fff3cd;
+            --highlight-border: #ffc107;
+            --badge-bg: #e2eafc;
+            --badge-text: #1d3557;
+        }
+
+        :root[data-theme="cyberpunk"] {
+            --bg-primary: #0d0221;
+            --bg-secondary: #19053d;
+            --bg-tertiary: #2a085c;
+            --text-primary: #00f5d4;
+            --text-secondary: #f72585;
+            --accent: #f72585;
+            --accent-hover: #b5179e;
+            --border: #7209b7;
+            --card-bg: #150338;
+            --highlight: #3d0066;
+            --highlight-border: #00f5d4;
+            --badge-bg: #2a085c;
+            --badge-text: #00f5d4;
+        }
+
+        :root[data-theme="solarized"] {
+            --bg-primary: #073642;
+            --bg-secondary: #002b36;
+            --bg-tertiary: #586e75;
+            --text-primary: #93a1a1;
+            --text-secondary: #839496;
+            --accent: #b58900;
+            --accent-hover: #cb4b16;
+            --border: #586e75;
+            --card-bg: #002b36;
+            --highlight: #0d4b59;
+            --highlight-border: #b58900;
+            --badge-bg: #073642;
+            --badge-text: #2aa198;
+        }
+
+        :root[data-theme="synthwave"] {
+            --bg-primary: #2b213a;
+            --bg-secondary: #241b35;
+            --bg-tertiary: #3a2e51;
+            --text-primary: #f4eee0;
+            --text-secondary: #e5bace;
+            --accent: #ff7edb;
+            --accent-hover: #36f2d7;
+            --border: #ff7edb;
+            --card-bg: #241b35;
+            --highlight: #4a2c5e;
+            --highlight-border: #36f2d7;
+            --badge-bg: #3a2e51;
+            --badge-text: #ff7edb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER & NAVBAR */
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .brand i {
+            color: var(--accent);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        select {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* MAIN CONTAINER LAYOUT */
+        .main-container {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* PANTRY PANEL */
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-primary);
+        }
+
+        .panel-title i {
+            color: var(--accent);
+        }
+
+        .input-box-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .input-box-group input {
+            flex: 1;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 10px 14px;
+            border-radius: 8px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.92;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+        }
+
+        .btn-action {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        /* QUICK INGREDIENTS PILLS */
+        .category-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ingredients-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .tag {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .tag:hover, .tag.selected {
+            background-color: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        /* CHOSEN INGREDIENTS LIST */
+        .pantry-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 50px;
+            max-height: 120px;
+            overflow-y: auto;
+            padding: 8px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .pantry-item {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .pantry-item i {
+            cursor: pointer;
+            color: var(--accent);
+        }
+
+        /* COOKING STYLE SELECTION */
+        .style-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .style-card {
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .style-card.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background-color: var(--bg-tertiary);
+        }
+
+        /* RECIPE OUTPUT CONTAINER */
+        .recipe-output-panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            min-height: 500px;
+            position: relative;
+        }
+
+        .welcome-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 16px;
+            color: var(--text-secondary);
+            padding: 40px;
+        }
+
+        .welcome-state i {
+            font-size: 4rem;
+            color: var(--accent);
+            opacity: 0.8;
+        }
+
+        .recipe-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            gap: 16px;
+        }
+
+        .recipe-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
+        }
+
+        .recipe-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--bg-primary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        /* SPEECH CONTROLS AUDIO BAR */
+        .speech-control-bar {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .speech-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .speech-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rate-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .rate-control input[type="range"] {
+            width: 90px;
+            accent-color: var(--accent);
+        }
+
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 850px) {
+            .recipe-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-box {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .section-box h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        ul.ingredients-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        ul.ingredients-list li {
+            padding: 8px 12px;
+            background-color: var(--bg-secondary);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        ul.ingredients-list li i {
+            color: var(--accent);
+        }
+
+        /* INSTRUCTIONS LIST & VISUAL HIGHLIGHTING */
+        ol.instructions-list {
+            list-style: none;
+            counter-reset: step-counter;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        ol.instructions-list li {
+            counter-increment: step-counter;
+            padding: 14px 16px 14px 48px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        ol.instructions-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            width: 24px;
+            height: 24px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        ol.instructions-list li.speaking-active {
+            background-color: var(--highlight);
+            border-color: var(--highlight-border);
+            box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
+            transform: scale(1.02);
+        }
+
+        /* NUTRITION GRID */
+        .nutrition-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .nutrition-card {
+            background-color: var(--bg-tertiary);
+            padding: 10px;
+            border-radius: 6px;
+        }
+
+        .nutrition-val {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .nutrition-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* LOADING SPINNER */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="brand">
+            <i class="fa-solid fa-utensils"></i>
+            <span>tcloud Chef</span>
+        </a>
+        
+        <div class="nav-controls">
+            <!-- THEME SELECTOR -->
+            <div class="control-group">
+                <label for="themeSelect"><i class="fa-solid fa-palette"></i> Theme:</label>
+                <select id="themeSelect" onchange="switchTheme(this.value)">
+                    <option value="dark">1. Dark</option>
+                    <option value="light">2. Light</option>
+                    <option value="cyberpunk">3. Cyberpunk</option>
+                    <option value="solarized">4. Solarized</option>
+                    <option value="synthwave">5. Synthwave</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- PANTRY & CONTROLS PANEL -->
+        <div class="panel">
+            <div class="panel-title">
+                <i class="fa-solid fa-basket-shopping"></i> My Fridge & Pantry
+            </div>
+
+            <!-- Custom Ingredient Input -->
+            <div class="input-box-group">
+                <input type="text" id="ingredientInput" placeholder="Add ingredient (e.g. chicken, garlic, rice)..." onkeydown="handleIngredientInputKey(event)">
+                <button class="btn" onclick="addCustomIngredient()"><i class="fa-solid fa-plus"></i></button>
+            </div>
+
+            <!-- Quick Add Suggestions -->
+            <div>
+                <div class="category-label">Quick Add Common Items</div>
+                <div class="ingredients-tags" id="quickTags">
+                    <span class="tag" onclick="toggleTag('Chicken Breast')">+ Chicken</span>
+                    <span class="tag" onclick="toggleTag('Eggs')">+ Eggs</span>
+                    <span class="tag" onclick="toggleTag('Garlic')">+ Garlic</span>
+                    <span class="tag" onclick="toggleTag('Tomatoes')">+ Tomatoes</span>
+                    <span class="tag" onclick="toggleTag('Rice')">+ Rice</span>
+                    <span class="tag" onclick="toggleTag('Pasta')">+ Pasta</span>
+                    <span class="tag" onclick="toggleTag('Cheese')">+ Cheese</span>
+                    <span class="tag" onclick="toggleTag('Olive Oil')">+ Olive Oil</span>
+                    <span class="tag" onclick="toggleTag('Onions')">+ Onions</span>
+                    <span class="tag" onclick="toggleTag('Spinach')">+ Spinach</span>
+                </div>
+            </div>
+
+            <!-- Selected Pantry List -->
+            <div>
+                <div class="category-label">Selected Pantry Ingredients</div>
+                <div class="pantry-list" id="pantryListContainer">
+                    <span style="color: var(--text-secondary); font-size: 0.8rem; padding: 4px;">No ingredients added yet. Click tags above or type to add.</span>
+                </div>
+            </div>
+
+            <!-- Cuisine & Diet Selectors -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <div class="category-label">Cuisine</div>
+                    <select id="cuisineSelect" style="width: 100%;">
+                        <option value="International">Any Cuisine</option>
+                        <option value="Italian">Italian</option>
+                        <option value="Mexican">Mexican</option>
+                        <option value="Asian">Asian Fusion</option>
+                        <option value="Mediterranean">Mediterranean</option>
+                    </select>
+                </div>
+                <div>
+                    <div class="category-label">Dietary</div>
+                    <select id="dietSelect" style="width: 100%;">
+                        <option value="None">No Restriction</option>
+                        <option value="Vegetarian">Vegetarian</option>
+                        <option value="Vegan">Vegan</option>
+                        <option value="Low Carb">Keto / Low Carb</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cooking Style Selector -->
+            <div>
+                <div class="category-label">Cooking Style</div>
+                <div class="style-options">
+                    <div class="style-card active" onclick="selectStyle('Gourmet', this)">
+                        <i class="fa-solid fa-star" style="display:block; margin-bottom:4px;"></i> Gourmet
+                    </div>
+                    <div class="style-card" onclick="selectStyle('Budget-Friendly', this)">
+                        <i class="fa-solid fa-wallet" style="display:block; margin-bottom:4px;"></i> Budget
+                    </div>
+                    <div class="style-card" onclick="selectStyle('Quick & Easy', this)">
+                        <i class="fa-solid fa-bolt" style="display:block; margin-bottom:4px;"></i> Quick (15m)
+                    </div>
+                    <div class="style-card" onclick="selectStyle('Healthy & Fit', this)">
+                        <i class="fa-solid fa-heart-pulse" style="display:block; margin-bottom:4px;"></i> Healthy
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button class="btn" style="width: 100%; padding: 12px; font-size: 1rem; justify-content: center;" onclick="generateRecipe()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Recipe
+            </button>
+        </div>
+
+        <!-- RECIPE OUTPUT PANEL -->
+        <div class="recipe-output-panel" id="recipeOutputPanel">
+            <!-- Loading Overlay -->
+            <div class="loading-overlay hidden" id="loadingOverlay">
+                <div class="spinner"></div>
+                <div style="font-weight: 600; color: #fff;" id="loadingMsg">tcloud Chef is crafting your recipe...</div>
+            </div>
+
+            <!-- Welcome State -->
+            <div class="welcome-state" id="welcomeState">
+                <i class="fa-solid fa-hat-chef"></i>
+                <h2>Hands-Free Culinary Assistant</h2>
+                <p>Add ingredients on the left, pick your preferences, and click 'Generate Recipe'. Use our built-in text-to-speech engine to listen to steps out loud while your hands are busy cooking!</p>
+            </div>
+
+            <!-- Generated Recipe Container -->
+            <div class="hidden" id="recipeContainer" style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="recipe-header">
+                    <div>
+                        <div class="recipe-title" id="outTitle">Garlic Herb Rice Skillet</div>
+                        <div class="recipe-meta">
+                            <span><i class="fa-regular fa-clock"></i> <strong id="outPrepTime">20 mins</strong></span>
+                            <span><i class="fa-solid fa-fire"></i> <strong id="outCalories">380 kcal</strong></span>
+                            <span><i class="fa-solid fa-utensils"></i> <strong id="outStyleBadge">Gourmet</strong></span>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-action" onclick="window.print()"><i class="fa-solid fa-print"></i> Print</button>
+                </div>
+
+                <!-- HANDS-FREE VOICE SPEECH BAR -->
+                <div class="speech-control-bar">
+                    <div class="speech-info">
+                        <i class="fa-solid fa-volume-high fa-lg"></i>
+                        <span id="speechStatus">Hands-Free Audio Assistant</span>
+                    </div>
+
+                    <div class="speech-buttons">
+                        <button class="btn btn-action" id="playAudioBtn" onclick="readRecipeAloud()"><i class="fa-solid fa-play"></i> Read Aloud</button>
+                        <button class="btn btn-secondary btn-action" id="pauseAudioBtn" onclick="pauseSpeech()"><i class="fa-solid fa-pause"></i> Pause</button>
+                        <button class="btn btn-secondary btn-action" onclick="stopSpeech()"><i class="fa-solid fa-stop"></i> Stop</button>
+                    </div>
+
+                    <div class="rate-control">
+                        <span>Speed:</span>
+                        <input type="range" id="speechRate" min="0.5" max="1.5" step="0.1" value="0.9" onchange="updateSpeechRate()">
+                        <span id="rateVal">0.9x</span>
+                    </div>
+                </div>
+
+                <!-- Nutrition Fact Cards -->
+                <div class="nutrition-grid">
+                    <div class="nutrition-card">
+                        <div class="nutrition-val" id="outProt">32g</div>
+                        <div class="nutrition-label">Protein</div>
+                    </div>
+                    <div class="nutrition-card">
+                        <div class="nutrition-val" id="outCarbs">42g</div>
+                        <div class="nutrition-label">Carbs</div>
+                    </div>
+                    <div class="nutrition-card">
+                        <div class="nutrition-val" id="outFat">12g</div>
+                        <div class="nutrition-label">Fat</div>
+                    </div>
+                    <div class="nutrition-card">
+                        <div class="nutrition-card">
+                            <div class="nutrition-val" id="outFiber">5g</div>
+                            <div class="nutrition-label">Fiber</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recipe-grid">
+                    <!-- Ingredients List -->
+                    <div class="section-box">
+                        <h3><i class="fa-solid fa-basket-shopping"></i> Ingredients</h3>
+                        <ul class="ingredients-list" id="outIngredientsList">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <!-- Step by Step Instructions -->
+                    <div class="section-box">
+                        <h3><i class="fa-solid fa-list-check"></i> Step-by-Step Instructions</h3>
+                        <ol class="instructions-list" id="outInstructionsList">
+                            <!-- Populated dynamically -->
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedIngredients = ['Chicken Breast', 'Garlic', 'Rice', 'Olive Oil'];
+        let selectedCookingStyle = 'Gourmet';
+
+        // Speech Synthesis Global State
+        const synth = window.speechSynthesis;
+        let speechUtterances = [];
+        let currentStepIndex = 0;
+        let isPaused = false;
+        let speechRate = 0.9;
+
+        window.onload = function() {
+            renderPantryList();
+        };
+
+        function switchTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+        }
+
+        function selectStyle(style, element) {
+            document.querySelectorAll('.style-card').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            selectedCookingStyle = style;
+        }
+
+        function toggleTag(ingName) {
+            if (selectedIngredients.includes(ingName)) {
+                selectedIngredients = selectedIngredients.filter(i => i !== ingName);
+            } else {
+                selectedIngredients.push(ingName);
+            }
+            renderPantryList();
+        }
+
+        function addCustomIngredient() {
+            const input = document.getElementById('ingredientInput');
+            const val = input.value.trim();
+            if (val && !selectedIngredients.includes(val)) {
+                selectedIngredients.push(val);
+                input.value = '';
+                renderPantryList();
+            }
+        }
+
+        function handleIngredientInputKey(e) {
+            if (e.key === 'Enter') addCustomIngredient();
+        }
+
+        function removeIngredient(ingName) {
+            selectedIngredients = selectedIngredients.filter(i => i !== ingName);
+            renderPantryList();
+        }
+
+        function renderPantryList() {
+            const container = document.getElementById('pantryListContainer');
+            if (selectedIngredients.length === 0) {
+                container.innerHTML = '<span style="color: var(--text-secondary); font-size: 0.8rem; padding: 4px;">No ingredients added yet. Click tags above or type to add.</span>';
+                return;
+            }
+
+            container.innerHTML = '';
+            selectedIngredients.forEach(ing => {
+                const tag = document.createElement('div');
+                tag.className = 'pantry-item';
+                tag.innerHTML = `${ing} <i class="fa-solid fa-xmark" onclick="removeIngredient('${ing}')"></i>`;
+                container.appendChild(tag);
+            });
+        }
+
+        function updateSpeechRate() {
+            speechRate = parseFloat(document.getElementById('speechRate').value);
+            document.getElementById('rateVal').innerText = speechRate + 'x';
+        }
+
+        async function generateRecipe() {
+            if (selectedIngredients.length === 0) {
+                alert('Please add at least one pantry ingredient first!');
+                return;
+            }
+
+            stopSpeech();
+
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const welcomeState = document.getElementById('welcomeState');
+            const recipeContainer = document.getElementById('recipeContainer');
+
+            welcomeState.classList.add('hidden');
+            recipeContainer.classList.add('hidden');
+            loadingOverlay.classList.remove('hidden');
+
+            const cuisine = document.getElementById('cuisineSelect').value;
+            const diet = document.getElementById('dietSelect').value;
+
+            // Generate recipe locally based on inputs
+            setTimeout(() => {
+                const title = `${selectedCookingStyle} ${cuisine !== 'International' ? cuisine : ''} ${selectedIngredients[0]} Skillet`;
+                
+                document.getElementById('outTitle').innerText = title;
+                document.getElementById('outPrepTime').innerText = '20-25 mins';
+                document.getElementById('outCalories').innerText = '420 kcal';
+                document.getElementById('outStyleBadge').innerText = selectedCookingStyle;
+
+                document.getElementById('outProt').innerText = '34g';
+                document.getElementById('outCarbs').innerText = '40g';
+                document.getElementById('outFat').innerText = '14g';
+                document.getElementById('outFiber').innerText = '6g';
+
+                // Fill Ingredients
+                const ingList = document.getElementById('outIngredientsList');
+                ingList.innerHTML = '';
+                selectedIngredients.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${item}`;
+                    ingList.appendChild(li);
+                });
+                ['Salt & Black Pepper', 'Cooking Oil / Butter', 'Fresh Herbs (optional)'].forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${item} (Pantry Staple)`;
+                    ingList.appendChild(li);
+                });
+
+                // Fill Instructions
+                const instList = document.getElementById('outInstructionsList');
+                instList.innerHTML = '';
+                
+                const steps = [
+                    `Prepare all your ingredients: ${selectedIngredients.join(', ')}. Chop vegetables and trim proteins into even bite-sized pieces.`,
+                    `Heat a large skillet or non-stick pan over medium-high heat and add 1 tablespoon of cooking oil or butter.`,
+                    `Add aromatics such as garlic or onions first, sautéing for 1-2 minutes until fragrant and translucent.`,
+                    `Incorporate your main protein or hard vegetables. Cook for 6 to 8 minutes, stirring occasionally until golden brown.`,
+                    `Mix in remaining pantry ingredients and grain bases. Season generously with salt, pepper, and desired spices.`,
+                    `Reduce heat to low, cover with a lid, and simmer for 5 minutes until flavors meld together. Serve piping hot!`
+                ];
+
+                steps.forEach((stepText, idx) => {
+                    const li = document.createElement('li');
+                    li.id = `step-${idx}`;
+                    li.innerText = stepText;
+                    instList.appendChild(li);
+                });
+
+                loadingOverlay.classList.add('hidden');
+                recipeContainer.classList.remove('hidden');
+            }, 800);
+        }
+
+        /* WEB SPEECH API CONTROLLER */
+        function readRecipeAloud() {
+            if (!('speechSynthesis' in window)) {
+                alert('Sorry, your browser does not support hands-free audio speech!');
+                return;
+            }
+
+            if (isPaused) {
+                synth.resume();
+                isPaused = false;
+                document.getElementById('speechStatus').innerText = 'Reading Recipe Steps...';
+                return;
+            }
+
+            stopSpeech();
+
+            const stepElements = document.querySelectorAll('#outInstructionsList li');
+            if (stepElements.length === 0) return;
+
+            currentStepIndex = 0;
+            speakStep(stepElements, currentStepIndex);
+        }
+
+        function speakStep(stepElements, index) {
+            if (index >= stepElements.length) {
+                stopSpeech();
+                document.getElementById('speechStatus').innerText = 'Finished Reading Recipe!';
+                return;
+            }
+
+            // Highlight current UI step
+            stepElements.forEach(el => el.classList.remove('speaking-active'));
+            const activeEl = document.getElementById(`step-${index}`);
+            if (activeEl) {
+                activeEl.classList.add('speaking-active');
+                activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            const stepText = `Step ${index + 1}. ${stepElements[index].innerText}`;
+            document.getElementById('speechStatus').innerText = `Reading Step ${index + 1} of ${stepElements.length}...`;
+
+            const utterance = new SpeechSynthesisUtterance(stepText);
+            utterance.rate = speechRate;
+
+            utterance.onend = function() {
+                if (!isPaused && synth.speaking) {
+                    currentStepIndex++;
+                    speakStep(stepElements, currentStepIndex);
+                }
+            };
+
+            synth.speak(utterance);
+        }
+
+        function pauseSpeech() {
+            if (synth.speaking && !synth.paused) {
+                synth.pause();
+                isPaused = true;
+                document.getElementById('speechStatus').innerText = 'Audio Paused';
+            }
+        }
+
+        function stopSpeech() {
+            synth.cancel();
+            isPaused = false;
+            currentStepIndex = 0;
+            document.querySelectorAll('#outInstructionsList li').forEach(el => el.classList.remove('speaking-active'));
+            document.getElementById('speechStatus').innerText = 'Hands-Free Audio Assistant';
+        }
+    </script>
+</body>
+</html>
